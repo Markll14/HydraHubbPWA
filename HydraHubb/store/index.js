@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import { db } from '@/firebase/init.js'
 import firebase from 'firebase'
+import Vue from 'vue'
 import Cookie from 'js-cookie'
 
 const createStore = () => {
@@ -9,6 +10,7 @@ const createStore = () => {
       loadedCards: [],
       user: null,
       username: null,
+      userInfoSub: [],
       token: null
     },
     mutations: {
@@ -20,6 +22,9 @@ const createStore = () => {
       },
       setUsername(state, payload) {
         state.username = payload
+      },
+      setUserInfoSub(state, payload) {
+        Vue.set(state, 'userInfoSub', payload)
       },
       setToken(state, token) {
         state.token = token
@@ -42,6 +47,9 @@ const createStore = () => {
 
       setCards(vuexContext, cards) {
         vuexContext.commit('setCards', cards)
+      },
+      setUserInfo(vuexContext, userInfo) {
+        vuexContext.commit('setUserInfoSub', userInfo)
       },
       initAuth(vuexContext, req) {
         // we are checking if we are loading on client side or server side. if client then we are loading with cookies.
@@ -78,6 +86,20 @@ const createStore = () => {
           vuexContext.commit('setUser', userId)
           vuexContext.commit('setUsername', username)
         }
+      },
+      grabUserInfo(vuexContext, context) {
+        let userInfo = []
+        var userRef = db.collection('users')
+        var query = userRef
+          .where('user_id', '==', vuexContext.state.user)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              console.log(doc.data())
+              userInfo.push(doc.data())
+            })
+            vuexContext.commit('setUserInfoSub', userInfo)
+          })
       },
       currentUser() {
         const user = firebase.auth().currentUser
