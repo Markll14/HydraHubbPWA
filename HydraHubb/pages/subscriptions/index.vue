@@ -1,34 +1,20 @@
 <template>
   <div class="subWrapper">
     <h2>This is the Subscriptions page!</h2>
-    <div 
-      v-for="(userInfoSub,index) in userInfoSubs" 
-      :key="index" 
-      class="subscriptions"/>
-    <h3>Subscriptions: {{ userInfoSub.subscriptions }}</h3>
+    <subscription/>
   </div>
   
 </template>
 
 <script>
-import { db } from '@/firebase/init'
+import subscription from '@/components/subscription'
 export default {
-  data() {
-    return {
-      userInfoSubs: []
-    }
+  middleware: 'check-auth',
+  components: {
+    subscription
   },
-  created() {
-    var userRef = db.collection('users')
-    var query = userRef
-      .where('user_id', '==', this.$store.state.user)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          console.log(doc.data())
-          this.userInfoSubs.push(doc.data())
-        })
-      })
+  data() {
+    return {}
   }
 }
 </script>
