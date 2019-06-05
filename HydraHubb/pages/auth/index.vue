@@ -83,7 +83,7 @@ export default {
           this.slug = slugify(this.username, {
             replacement: '-',
             remove: /[$*_+~.()'"\-:@]/g,
-            lower: true
+            lower: false
           })
           // is creating a variable that stores slug then checks whether it exists, if it does we send feedback
           let ref = db.collection('users').doc(this.slug)
@@ -98,7 +98,9 @@ export default {
                 .then(cred => {
                   ref.set({
                     username: this.username,
-                    user_id: cred.user.uid
+                    user_id: cred.user.uid,
+                    subscriptions: [],
+                    subscribers: []
                   })
                   this.$store.commit('setUser', cred.user.uid)
                   this.$store.commit('setUsername', this.username)
